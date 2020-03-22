@@ -15,28 +15,12 @@ namespace Notes
         }
 
         // When the page loads on the device, this method is called
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
 
-            var notes = new List<Note>();
-
-            // Loop through the directory and open each .notes.txt file and read it, then add it to a list
-            var files = Directory.EnumerateFiles(App.FolderPath, "*.notes.txt");
-            foreach (var filename in files)
-            {
-                notes.Add(new Note
-                {
-                    Filename = filename,
-                    Text = File.ReadAllText(filename),
-                    Date = File.GetCreationTime(filename)
-                });
-            }
-
-            // Note take the notes list, and create a list view using it
-            listView.ItemsSource = notes
-                .OrderBy(d => d.Date)
-                .ToList();
+            // Get all the notes in the database, and create a listview of them
+            listView.ItemsSource = await App.Database.GetNotesAsync();
         }
 
         // Method to run when the Add Note button is pressed in the toolbar
